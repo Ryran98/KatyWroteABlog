@@ -1,31 +1,34 @@
 import React from 'react';
+import { Switch, Route } from "react-router-dom";
+import { Container } from 'reactstrap';
+import { Header } from './components/header';
+import { Navigation } from './components/navigation';
 
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { Home } from "./containers/home";
-import { Travel } from "./containers/travel";
-import { Recipies } from "./containers/recipies";
-import { VanLife } from "./containers/vanlife";
+import routes from './config/routes';
 
 function App() {
   return (
-    <div className="App">
-      <Router>
+      <div className="App">
+        <Container fluid className="p-0">
+          <Navigation />
+          <Header 
+              title="Katy wrote a blog"
+              headline="Join us on our adventure!"
+          />
+        </Container>
         <Switch>
-          <Route exact path="/">
-            <Home />
-          </Route>
-          <Route exact path="/travel">
-            <Travel />
-          </Route>
-          <Route exact path="/recipies">
-            <Recipies />
-          </Route>
-          <Route exact path="/vanlife">
-            <VanLife />
-          </Route>
+          {routes.map((route, index) => {
+            return (
+              <Route 
+                  key={index}
+                  exact={route.exact}
+                  path={route.path}
+                  render={route.component}
+              />
+            )
+          })}
         </Switch>
-      </Router>
-    </div>
+      </div>
   );
 }
 
