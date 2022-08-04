@@ -1,30 +1,32 @@
 import { HomePage } from "../pages/home";
-import { Travel } from "../pages/travel";
-import { Recipies } from "../pages/recipies";
-import { VanLife } from "../pages/vanlife";
+import { TravelBlogPage } from "../pages/blog/travel";
+import { RecipiesBlogPage } from "../pages/blog/recipies";
+import { VanLifeBlogPage } from "../pages/blog/vanlife";
+import { AboutPage } from "../pages/about";
+import { ContactPage } from "../pages/contact";
 
 const authRoutes = [];
 
 const blogRoutes = [
     {
-        path: '/travel',
+        path: '/blog/travel',
         exact: true,
         auth: false,
-        component: Travel,
+        component: TravelBlogPage,
         name: 'Travel'
     },
     {
-        path: '/recipies',
+        path: '/blog/recipies',
         exact: true,
         auth: false,
-        component: Recipies,
+        component: RecipiesBlogPage,
         name: 'Recipies'
     },
     {
-        path: '/vanlife',
+        path: '/blog/vanlife',
         exact: true,
         auth: false,
-        component: VanLife,
+        component: VanLifeBlogPage,
         name: 'VanLife'
     }
 ];
@@ -36,6 +38,20 @@ const mainRoutes = [
         auth: false,
         component: HomePage,
         name: 'Home'
+    },
+    {
+        path: '/about',
+        exact: true,
+        auth: false,
+        component: AboutPage,
+        name: 'About'
+    },
+    {
+        path: '/contact',
+        exact: true,
+        auth: false,
+        component: ContactPage,
+        name: 'Contact'
     }
 ];
 
