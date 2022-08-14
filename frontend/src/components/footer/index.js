@@ -4,7 +4,11 @@ import { Brands } from "./brands";
 import { SubscribeForm } from "./subscribeForm";
 
 var footerStyle = {
-    marginTop: "10vh"
+    marginTop: "5vh"
+};
+
+var lineBreakStyle = {
+    marginBottom: "5vh"
 };
 
 var copyrightStyle = {
@@ -20,6 +24,7 @@ export class Footer extends React.Component {
     render() {
         return (
             <div style={footerStyle}>
+                <hr style={lineBreakStyle} />
                 <SubscribeForm />
                 <Brands />
                 <Container fluid style={copyrightStyle}>

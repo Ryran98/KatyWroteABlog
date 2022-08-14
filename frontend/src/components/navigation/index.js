@@ -3,15 +3,15 @@ import 'react-router';
 import { Container, NavLink, Navbar, NavbarToggler, Collapse, NavItem, Nav, Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 
 var navbarStyle = {
-    backgroundColor: "#068845"
+    // backgroundColor: "#068845"
 };
 
 var navLinkStyle = {
-    color: "#ffffff"
+    // color: "#ffffff"
 }
 
 var dropdownStyle = {
-    backgroundColor: "#0AD66D",
+    // backgroundColor: "#0AD66D",
     margin: "0"
 }
 

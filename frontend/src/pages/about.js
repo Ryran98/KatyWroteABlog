@@ -2,9 +2,14 @@ import React from 'react';
 import { Container, Row } from 'reactstrap';
 import AboutImage from "../images/AboutMe.jpg";
 
+var headingStyle = {
+    marginBottom: "3vh"
+};
+
 var textStyle = {
     fontSize: "17px",
-    lineHeight: "1.7"
+    lineHeight: "1.7",
+    color: "#2f2e2f"
 };
 
 var aboutImageStyle = {
@@ -17,7 +22,7 @@ export class AboutPage extends React.Component {
             <Container>
                 <Row>
                     <div className="col-md-6">
-                        <h3>About me</h3>
+                        <h3 style={headingStyle}>About me</h3>
                         <p style={textStyle}>
                             Hi I’m Katy
                         </p>
