@@ -20,6 +20,8 @@ class BlogPost(db.Model):
     type = db.Column(db.Integer)
     image = db.Column(db.String(5000))
     content = db.Column(db.String(5000))
+    is_draft = db.Column(db.Boolean)
+    created_date = db.Column(db.DateTime)
 
     def __init__(self, title, type, image, content):
         self.title = title

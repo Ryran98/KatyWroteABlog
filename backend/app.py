@@ -2,6 +2,7 @@ from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, BlogPost, setup_db
+import logging
 
 ITEMS_PER_PAGE = 10
 
@@ -23,19 +24,37 @@ def create_app():
 
     @app.route('/blogs', methods=['GET'])
     def get_blogs():
-        blog_posts = BlogPost.query.order_by(BlogPost.id).all()
-        selected_blog_posts = paginate_items(request, blog_posts)
-
-        if not selected_blog_posts or len(selected_blog_posts) < 1:
-            abort(404)
-
         try:
+            blog_post_id = request.args.get('blogPostId', None, type=int)
+            if blog_post_id is not None:
+                blog_post = BlogPost.query.get(blog_post_id)
+
+                return jsonify({
+                    'success': True,
+                    'blogs': blog_post.format()
+                }), 200
+
+            blog_type_id = request.args.get('blogTypeId', None, type=int)
+            if blog_type_id is not None:
+                blog_posts = BlogPost.query.filter(BlogPost.type==blog_type_id)
+                return jsonify({
+                    'success': True,
+                    'blogs': [blog_post.format() for blog_post in blog_posts]
+                }), 200
+            
+            blog_posts = BlogPost.query.order_by(BlogPost.id).all()
+            selected_blog_posts = paginate_items(request, blog_posts)
+
+            if not selected_blog_posts or len(selected_blog_posts) < 1:
+                abort(404)
+
             return jsonify({
                 'success': True,
                 'blogs': selected_blog_posts
             }), 200
 
-        except:
+        except Exception as e:
+            logging.critical(e, exc_info=True)
             abort(422)
 
     @app.route('/blogs', methods=['POST'])
