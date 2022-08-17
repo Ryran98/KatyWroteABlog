@@ -3,6 +3,8 @@ import config from "../../config/config";
 import { EditorState, ContentState, convertToRaw } from 'draft-js';
 import htmlToDraft from 'html-to-draftjs';
 import draftToHtml from 'draftjs-to-html';
+import { Editor } from "react-draft-wysiwyg";
+import { Container, Input, Label } from "reactstrap";
 
 export class EditBlogPage extends React.Component {
     constructor(props) {
@@ -94,7 +96,45 @@ export class EditBlogPage extends React.Component {
     
     render() {
         return (
-            <div>Edit page</div>
+            <Container fluid>
+                <Form>
+                    <FormGroup>
+                        <Label for="title">Title *</Label>
+                        <Input
+                            type="text"
+                            name="title"
+                            value={this.state.title}
+                            id="title"
+                            placeholder="Enter a title ..."
+                            disabled={this.state.saving}
+                            onChange={event => this.setState({title: event.target.value})}
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="image">Image URL</Label>
+                        <Input
+                            type="text"
+                            name="image"
+                            value={this.state.image}
+                            id="image"
+                            placeholder="Picture URL, ex: http://...."
+                            disabled={this.state.saving}
+                            onChange={event => this.setState({image: event.target.value})}
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>Content</Label>
+                        <Editor 
+                            editorState={this.state.editorState}
+                            wrapperClassName="card"
+                            editorClassName="card-body"
+                            onEditorStateChange={newState => {
+                                
+                            }}
+                        />
+                    </FormGroup>
+                </Form>
+            </Container>
         );
     }
 }
