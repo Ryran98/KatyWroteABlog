@@ -21,12 +21,11 @@ function App() {
                   key={index}
                   exact={route.exact}
                   path={route.path}
-                  component={route.component}
+                  component={props => <route.component {...props} />}
               />
             )
           })}
         </Switch>
-        <Footer />
       </div>
   );
 }

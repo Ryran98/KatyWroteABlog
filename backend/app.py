@@ -22,6 +22,13 @@ def create_app():
     cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
     migrate = Migrate(app, db)
 
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
+
     @app.route('/blogs', methods=['GET'])
     def get_blogs():
         try:
@@ -31,7 +38,7 @@ def create_app():
 
                 return jsonify({
                     'success': True,
-                    'blogs': blog_post.format()
+                    'blogPost': blog_post.format()
                 }), 200
 
             blog_type_id = request.args.get('blogTypeId', None, type=int)
@@ -91,7 +98,7 @@ def create_app():
             return jsonify({
                 'success': True,
                 'id': blog_post.id
-            }), 200
+            }), 201
 
         except:
             abort(422)
@@ -124,7 +131,7 @@ def create_app():
             return jsonify({
                 'success': True,
                 'blog': blog_post.format()
-            }), 200
+            }), 201
 
         except:
             abort(422)

@@ -1,16 +1,18 @@
 import React from 'react';
 import { Container } from 'reactstrap';
 import { Blog } from '../../components/blog';
+import { Footer } from '../../components/footer';
 import LondonTravelImage from '../../images/LondonTravelImage.jpg';
 
 export class TravelBlogPage extends React.Component {
     render() {
         return (
-            <Container fluid>
-                <Blog 
-                    title="Summer mini-break in London" 
-                    image={LondonTravelImage} 
-                    content="Myself and my partner, Tom, just got back from spending four days in bustling London during the recent heat wave and this is what we got up to. 
+            <div>
+                <Container fluid>
+                    <Blog
+                        title="Summer mini-break in London"
+                        image={LondonTravelImage}
+                        content="Myself and my partner, Tom, just got back from spending four days in bustling London during the recent heat wave and this is what we got up to. 
 
                     We arrived into Paddington station around midday on the Thursday and dropped our bags off at our accommodation. We were kindly gifted a stay at Hostel One Notting Hill which is in walking distance of Paddington station as well as Hyde Park and three tube stations. We had a quick tour around the hostel and dropped our bags off in our room before catching the tube to our only planned activity - watching Life of Pi at Wyndhams Theatre. 
                     
@@ -32,8 +34,10 @@ export class TravelBlogPage extends React.Component {
                     My brother introduced me to Beigel Bake several years ago and since then I’ve been hooked. If, like Tom, you’ve never been before Beigel Bake is a bagel shop that’s open 24/7 and it serves the softest, tastiest fresh bagels with a variety of different fillings I went for avocado and smoked salmon which cost £4 and Tom went for the traditional salt beef with mustard and gherkin. We spent the rest of the night catching up with a friend over drinks. 
                     
                     Sunday morning was time for us to check out of Hostel One Notting Hill and head back to Reading where Rex, our van and home, was waiting for us."
-                />
-            </Container>
+                    />
+                </Container>
+                <Footer />
+            </div>
         );
     }
 }

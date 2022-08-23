@@ -21,11 +21,19 @@ var copyrightStyle = {
 };
 
 export class Footer extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.hasSubscribeForm = props.hasSubscribeForm;
+    }
+
     render() {
         return (
             <div style={footerStyle}>
                 <hr style={lineBreakStyle} />
-                <SubscribeForm />
+                {this.hasSubscribeForm === "1" &&
+                    <SubscribeForm />
+                }
                 <Brands />
                 <Container fluid style={copyrightStyle}>
                     <Row>
