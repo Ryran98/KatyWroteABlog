@@ -4,7 +4,8 @@ import { RecipiesBlogPage } from "../pages/blog/recipies";
 import { VanLifeBlogPage } from "../pages/blog/vanlife";
 import { AboutPage } from "../pages/about";
 import { ContactPage } from "../pages/contact";
-import { EditBlogPage } from "../pages/blog/edit";
+import { EditBlogPostPage } from "../pages/blog/edit";
+import { BlogPostPage } from "../pages/blog";
 
 const authRoutes = [
     
@@ -33,18 +34,25 @@ const blogRoutes = [
         name: 'VanLife'
     },
     {
+        path: '/blogpost/:blogPostId',
+        exact: true,
+        auth: false,
+        component: BlogPostPage,
+        name: 'BlogPost'
+    },
+    {
         path: '/blog/edit',
         exact: true,
         auth: true,
-        component: EditBlogPage,
-        name: 'CreateBlog'
+        component: EditBlogPostPage,
+        name: 'CreateBlogPost'
     },
     {
         path: '/blog/edit/:blogPostId',
         exact: true,
         auth: true,
-        component: EditBlogPage,
-        name: 'EditBlog'
+        component: EditBlogPostPage,
+        name: 'EditBlogPost'
     }
 ];
 

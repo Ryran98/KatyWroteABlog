@@ -1,209 +1,190 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import server from "../../config/config";
-import { EditorState, ContentState, convertToRaw } from 'draft-js';
-import axios from 'axios';
-import htmlToDraft from 'html-to-draftjs';
-import draftToHtml from 'draftjs-to-html';
-import { Editor } from "react-draft-wysiwyg";
 import { Button, Container, Form, FormGroup, Input, Label } from "reactstrap";
+import axios from 'axios';
 import { Link } from "react-router-dom";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { SuccessText } from "../../components/successText";
+import { ErrorText } from "../../components/errorText";
+import { LoadingComponent } from "../../components/loadingComponent/loadingComponent";
+import { Footer } from "../../components/footer";
 
-export class EditBlogPage extends React.Component {
-    constructor(props) {
-        super(props);
+export function EditBlogPostPage(props) {
+    const [id, setId] = useState("");
+    const [title, setTitle] = useState("");
+    const [type, setType] = useState(0);
+    const [image, setImage] = useState("");
+    const [content, setContent] = useState("");
 
-        // this.getBlogPost = this.getBlogPost.bind(this);
-        // this.createBlogPost = this.createBlogPost.bind(this);
-        // this.editBlogPost = this.editBlogPost.bind(this);
-        // this.deleteBlogPost = this.deleteBlogPost.bind(this);
+    const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
 
-        this.blogPostId = props.match.params.blogPostId;
-        this.title = "";
-        this.type = 0;
-        this.image = "";
-        this.content = "";
+    useEffect(() => {
+        let blogId = props.match.params.blogPostId;
 
-        this.state = {
-            editorState: EditorState.createEmpty(),
-            saving: false,
-            loading: true,
-            success: "",
-            error: ""
-        };
-
-        this.getTitle = this.getTitle.bind(this);
-        this.setTitle = this.setTitle.bind(this);
-    }
-
-    componentDidMount() {
-        if (this.state.blogPostId != null)
-            this.getBlogPost();
+        if (blogId) {
+            setId(blogId);
+            getBlogPost(blogId);
+        }
         else
-            this.setState({ loading: false });
-    }
+            setLoading(false);
+    }, []);
 
-    getTitle() {
-        console.log(`title : ${this.title}`);
-        return this.title;
-    }
+    const modules = {
+        toolbar: [
+            [{ font: [] }],
+            [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ script: "sub" }, { script: "super" }],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }],
+            [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
+            ["link", "image", "video"],
+            ["clean"]      
+        ]
+    };
 
-    setTitle(value) {
-        this.title = value;
-    }
-
-    async getBlogPost() {
+    const getBlogPost = async (id) => {
         try {
             const response = await axios({
                 method: "GET",
-                url: `${server.baseUrl}/blogs?blogPostId=${this.state.blogPostId}`
+                url: `${server.baseUrl}/blogs?blogPostId=${id}`
             });
 
             if (response.status === (200 || 304)) {
                 var blogPost = response.data.blogPost;
 
-                    this.title = blogPost.title;
-                    this.type = blogPost.type;
-                    this.image = blogPost.image;
-                    this.content = blogPost.content;
-
-                const contentBlock = htmlToDraft(blogPost.content);
-                const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
-                const editorState = EditorState.createWithContent(contentState);
-
-                this.setState({ editorState: editorState });
+                setTitle(blogPost.title);
+                setType(blogPost.type);
+                setImage(blogPost.image);
+                setContent(blogPost.content);
             }
             else {
-                console.log(`An error has occurred while trying to get blog post id ${this.state.blogPostId}`);
-                this.setState({ error: "Unable to retrieve blog post" });
+                console.log(`An error has occurred while trying to get blog post id ${id}`);
+                setError(`Unable to retrieve blog post id ${id}`);
             }
         }
         catch (error) {
-            this.setState({ error: error.message });
             console.log(`An error has occurred : ${error}`);
+            setError(error.message);
         }
         finally {
-            this.setState({ loading: false });
+            setLoading(false);
         }
     }
 
-    async createBlogPost() {
-        if (this.state.title === "" || this.state.type === 0 || this.state.content == "") {
-            this.setState({
-                error: "Please fill out all required fields",
-                success: ""
-            });
-            return null;
+    const createBlogPost = async () => {
+        if (title === "" || type === 0 || content == "") {
+            setError("Please fill out all required fields");
+            setSuccess("");
         }
 
-        this.setState({
-            error: "",
-            success: "",
-            saving: true
-        });
+        setError("");
+        setSuccess("");
+        setSaving(true);
 
         try {
+
             const response = await axios({
                 method: "POST",
                 url: `${server.baseUrl}/blogs`,
                 data: {
-                    title: this.state.title,
-                    type: this.state.type,
-                    image: this.state.image,
-                    contenet: this.state.content
+                    title: title,
+                    type: type,
+                    image: image,
+                    content: content
                 }
             });
 
             if (response.status === 201) {
-                this.setState({
-                    blogPostId: response.id,
-                    success: "Blog posted. You can continue to edit on this page"
-                });
+                setId(response.id);
+                setSuccess("Blog posted. You can continue to edit on this page");
             }
             else {
-                this.setState({ error: "Unable to create blog post" });
                 console.log(`An error has occurred while trying to create a blog post : ${response}`);
+                setError("Unable to create blog post");
             }
         }
         catch (error) {
-            this.setState({ error: error.message });
+            console.log(`error : ${error}`);
+            setError(error.message);
         }
         finally {
-            this.setState({ saving: false });
+            setSaving(false);
         }
     }
 
-    async editBlogPost() {
-        if (this.state.title === "" || this.state.type === 0 || this.state.content == "") {
-            this.setState({
-                error: "Please fill out all required fields",
-                success: ""
-            });
-            return null;
+    const editBlogPost = async () => {
+        if (title === "" || type === 0 || content == "") {
+            setError("Please fill out all required fields");
+            setSuccess("");
         }
 
-        this.setState({
-            error: "",
-            success: "",
-            saving: true
-        });
+        setError("");
+        setSuccess("");
+        setSaving(true);
 
         try {
             const response = await axios({
                 method: "PATCH",
-                url: `${server.baseUrl}/blogs/${this.state.blogPostId}`,
+                url: `${server.baseUrl}/blogs/${id}`,
                 data: {
-                    title: this.state.title,
-                    type: this.state.type,
-                    image: this.state.image,
-                    content: this.state.content
+                    title: title,
+                    type: type,
+                    image: image,
+                    content: content
                 }
             });
 
             if (response.status === 201) {
-                this.setState({ success: "Blog post updated" });
+                setSuccess("Blog post updated");
             }
             else {
-                this.setState({ error: "Unabled to updated blog post" });
-                console.log(`An error has occurred while trying to update blog post id ${this.state.blogPostId} : ${response}`);
+                console.log(`An error has occurred while trying to update blog post id ${id} : ${response}`);
+                setError("Unable to update blog post");
             }
         }
         catch (error) {
-            this.setState({ error: error.message });
+            setError(error.message);
         }
         finally {
-            this.setState({ saving: false });
+            setSaving(false);
         }
     }
 
-    async deleteBlogPost() {
+    const deleteBlogPost = async () => {
         try {
             const response = await axios({
                 method: "DELETE",
-                url: `${server.baseUrl}/blogs/${this.state.blogPostId}`
+                url: `${server.baseUrl}/blogs/${id}`
             });
 
             if (response.status === 200) {
-                this.setState({
-                    success: "Blog post deleted",
-                    blogPostId: ""
-                });
+                setSuccess("Blog post deleted");
+                setId("");
             }
             else {
-                this.setState({ error: "Unable to delete blog post" });
-                console.log(`An error has occurred while trying to delete blog post id ${this.state.blogPostId} : ${response}`);
+                console.log(`An error has occurred while trying to delete blog post id ${id} : ${response}`);
+                setError("Unable to delete blog post");
             }
         }
         catch (error) {
-            this.setState({ error: error.message });
+            setError(error.message);
         }
         finally {
-            this.setState({ loading: false });
+            setSaving(false);
         }
     }
 
-    render() {
-        return (
+    if (loading)
+        return <LoadingComponent />;
+
+    return (
+        <div>
             <Container>
                 <Form>
                     <FormGroup>
@@ -211,11 +192,11 @@ export class EditBlogPage extends React.Component {
                         <Input
                             type="text"
                             name="title"
-                            value={this.getTitle()}
+                            value={title}
                             id="title"
                             placeholder="Enter a title ..."
-                            disabled={this.state.saving}
-                            onChange={event => this.setTitle(event.target.value)}
+                            disabled={saving}
+                            onChange={event => setTitle(event.target.value)}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -224,10 +205,10 @@ export class EditBlogPage extends React.Component {
                             className="col-12"
                             type="select"
                             name="type"
-                            value={this.state.type}
+                            value={type}
                             id="type"
-                            disabled={this.state.saving}
-                            onChange={event => this.setState({type: event.target.value})}
+                            disabled={saving}
+                            onChange={event => setType(event.target.value)}
                         >
                             <option value="0">Pick an option...</option>
                             <option value="1">Travel</option>
@@ -238,59 +219,67 @@ export class EditBlogPage extends React.Component {
                     <FormGroup>
                         <Label for="image">Image URL</Label>
                         <Input
-                            type="text"
+                            type="file"
                             name="image"
-                            value={this.state.image ?? ""}
+                            value={""}
                             id="image"
-                            placeholder="Picture URL, ex: http://...."
-                            disabled={this.state.saving}
-                            onChange={event => this.setState({ image: event.target.value })}
+                            disabled={saving}
+                            onChange={event => setImage(event.target.value)}
                         />
                     </FormGroup>
                     <FormGroup>
                         <Label>Content</Label>
-                        <Editor
-                            editorState={this.state.editorState}
-                            wrapperClassName="card"
-                            editorClassName="card-body"
-                            onEditorStateChange={newState => {
-
+                        <ReactQuill
+                            theme="snow"
+                            value={content}
+                            modules={modules}
+                            onChange={newValue => {
+                                console.log(`value : ${newValue}`);
+                                setContent(newValue);
                             }}
                         />
                     </FormGroup>
                     <FormGroup>
-                        {/* <SuccessText success={success} /> */}
+                        <SuccessText success={success} />
                     </FormGroup>
                     <FormGroup>
                         <Button
                             block
                             onClick={() => {
-                                if (this.state.blogPostId != null && this.state.blogPostId != '')
-                                    this.editBlogPost();
+                                if (id != null && id != '')
+                                    editBlogPost();
                                 else
-                                    this.createBlogPost();
+                                    createBlogPost();
                             }}
-                            disabled={this.state.isSaving}
+                            disabled={saving}
                         >
                             <i className="fas fa-save mr-1"></i>
-                            {this.state.blogPostId != null && this.state.blogPostId != '' ? "Update" : "Post"}
+                            {id != null && id != '' ? "Update" : "Post"}
                         </Button>
-                        {this.state.blogPostId !== null && this.state.blogPostId !== '' &&
+                        {id != null && id != '' &&
                             <Button
                                 block
                                 color="success"
                                 tag={Link}
-                                to={`/blogs/${this.state.blogPostId}`}
+                                to={`/blogs/${id}`}
                             >
                                 View your blog post!
                             </Button>}
                     </FormGroup>
+                    <ErrorText error={error} />
                     <FormGroup>
                         <Label>Preview</Label>
-
+                        <div className="border ql-container p-2">
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: content
+                                }}
+                            />
+                        </div>
                     </FormGroup>
                 </Form>
             </Container>
-        );
-    }
+            <Footer />
+        </div>
+    );
 }

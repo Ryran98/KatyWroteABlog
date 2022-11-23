@@ -36,6 +36,9 @@ def create_app():
             if blog_post_id is not None:
                 blog_post = BlogPost.query.get(blog_post_id)
 
+                if not blog_post:
+                    abort(422)
+
                 return jsonify({
                     'success': True,
                     'blogPost': blog_post.format()
@@ -60,8 +63,8 @@ def create_app():
                 'blogs': selected_blog_posts
             }), 200
 
-        except Exception as e:
-            logging.critical(e, exc_info=True)
+        except:
+            logging.exception("message")
             abort(422)
 
     @app.route('/blogs', methods=['POST'])
@@ -71,6 +74,7 @@ def create_app():
         type = body.get('type', None)
         image = body.get('image', None)
         content = body.get('content', None)
+        is_draft = body.get('isDraft', False)
 
         if not title:
             return jsonify({
@@ -92,7 +96,7 @@ def create_app():
             }), 422
 
         try:
-            blog_post = BlogPost(title=title, type=type, image=image, content=content)
+            blog_post = BlogPost(title=title, type=type, image=image, content=content, is_draft=is_draft)
             blog_post.insert()
 
             return jsonify({
@@ -100,8 +104,13 @@ def create_app():
                 'id': blog_post.id
             }), 201
 
-        except:
-            abort(422)
+        except Exception as e:
+            logging.exception("message")
+            return jsonify({
+                'success': False,
+                'error': 422,
+                'message': str(e)
+            })
 
     @app.route('/blogs/<int:blog_id>', methods=['PATCH'])
     def update_blog(blog_id):
@@ -134,6 +143,7 @@ def create_app():
             }), 201
 
         except:
+            logging.exception("message")
             abort(422)
 
     @app.route('/blogs/<int:blog_id>', methods=['DELETE'])
