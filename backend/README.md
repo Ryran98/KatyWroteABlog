@@ -1,10 +1,12 @@
 # Backend server
 
+## Local setup
 
+### Downloads
 
-## Local Setup
+First you will need to download and install [python](https://www.python.org/downloads/). Would recommend the latest version, although if you are having issues, you may need to check version compatibility with various other packages such as SQLAlchemy, Flask etc
 
-### Virtual Environment
+### Virtual environment
 
 From the backend directory, run the following bash command:
 
@@ -20,11 +22,17 @@ You will also need to run a small script to set the required environment variabl
 . setup.sh
 ```
 
+### Installing packages
+
 You will then need to install all of the required packages to run the backend server:
 
 ```
 pip install -r requirements.txt
 ```
+
+### Local testing
+
+Once the virtual environment is setup and the packages are all installed, you can run the flask backend with the following command:
 
 ```
 py app.py
