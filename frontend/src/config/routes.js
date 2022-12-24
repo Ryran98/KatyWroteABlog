@@ -34,7 +34,7 @@ const blogRoutes = [
         name: 'VanLife'
     },
     {
-        path: '/blogpost/:blogPostId',
+        path: '/blog/post/:id',
         exact: true,
         auth: false,
         component: BlogPostPage,
@@ -48,7 +48,7 @@ const blogRoutes = [
         name: 'CreateBlogPost'
     },
     {
-        path: '/blog/edit/:blogPostId',
+        path: '/blog/edit/:id',
         exact: true,
         auth: true,
         component: EditBlogPostPage,

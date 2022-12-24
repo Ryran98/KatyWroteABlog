@@ -1,17 +1,19 @@
 import React from 'react';
 import 'react-router';
 import { Container, NavLink, Navbar, NavbarToggler, Collapse, NavItem, Nav, Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+import redVanImage from "../../images/red-van.webp";
 
 var navbarStyle = {
-    // backgroundColor: "#068845"
+    backgroundColor: "#068845",
+    marginBottom: "5vh"
 };
 
 var navLinkStyle = {
-    // color: "#ffffff"
+    color: "#ffffff"
 }
 
 var dropdownStyle = {
-    // backgroundColor: "#0AD66D",
+    backgroundColor: "#0AD66D",
     margin: "0"
 }
 
@@ -61,6 +63,9 @@ export class Navigation extends React.Component {
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse navbar isOpen={this.state.isOpen} >
                         <Nav className="ms-auto" navbar>
+                            <NavItem>
+                                <NavLink href="/" style={navLinkStyle}><b><i>Katy wrote a blog</i></b></NavLink>
+                            </NavItem>
                             <NavItem>
                                 <NavLink href="/" style={navLinkStyle}>Home</NavLink>
                             </NavItem>

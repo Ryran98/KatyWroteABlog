@@ -1,6 +1,6 @@
 import React from 'react';
+import Fade from "react-reveal/Fade";
 import { Container, Row } from 'reactstrap';
-import { Footer } from '../components/footer';
 import AboutImage from "../images/AboutMe.jpg";
 
 var headingStyle = {
@@ -20,9 +20,9 @@ var aboutImageStyle = {
 export class AboutPage extends React.Component {
     render() {
         return (
-            <div>
-                <Container>
-                    <Row>
+            <Container>
+                <Row>
+                    <Fade cascade>
                         <div className="col-md-6">
                             <h3 style={headingStyle}>About me</h3>
                             <p style={textStyle}>
@@ -45,10 +45,9 @@ export class AboutPage extends React.Component {
                         <div className="col-md-6">
                             <img src={AboutImage} style={aboutImageStyle} />
                         </div>
-                    </Row>
-                </Container>
-                <Footer />
-            </div>
+                    </Fade>
+                </Row>
+            </Container>
         );
     }
 }

@@ -13,7 +13,6 @@ export class ContactPage extends React.Component {
                         or use the contact form below.
                     </p>
                 </Container>
-                <Footer />
             </div>
         );
     }

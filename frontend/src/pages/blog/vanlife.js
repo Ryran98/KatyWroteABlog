@@ -5,12 +5,9 @@ import { Footer } from '../../components/footer';
 export class VanLifeBlogPage extends React.Component {
     render() {
         return (
-            <div>
-                <Container className="mt-5">
-                    Van Life
-                </Container>
-                <Footer />
-            </div>
+            <Container className="mt-5">
+                Van Life
+            </Container>
         );
     }
 }

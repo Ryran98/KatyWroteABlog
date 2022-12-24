@@ -2,6 +2,7 @@ from flask import Flask, request, abort, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, BlogPost, setup_db
+from sqlalchemy.sql import func
 import logging
 
 ITEMS_PER_PAGE = 10
@@ -32,12 +33,16 @@ def create_app():
     @app.route('/blogs', methods=['GET'])
     def get_blogs():
         try:
-            blog_post_id = request.args.get('blogPostId', None, type=int)
-            if blog_post_id is not None:
-                blog_post = BlogPost.query.get(blog_post_id)
+            id = request.args.get('id', None, type=int)
+            if id is not None:
+                blog_post = BlogPost.query.get(id)
 
                 if not blog_post:
-                    abort(422)
+                    return jsonify({
+                        'success': False,
+                        'error': 404,
+                        'message': 'blog post not found'
+                    }), 404
 
                 return jsonify({
                     'success': True,
@@ -49,18 +54,22 @@ def create_app():
                 blog_posts = BlogPost.query.filter(BlogPost.type==blog_type_id)
                 return jsonify({
                     'success': True,
-                    'blogs': [blog_post.format() for blog_post in blog_posts]
+                    'blogPosts': [blog_post.format() for blog_post in blog_posts]
                 }), 200
             
             blog_posts = BlogPost.query.order_by(BlogPost.id).all()
             selected_blog_posts = paginate_items(request, blog_posts)
 
             if not selected_blog_posts or len(selected_blog_posts) < 1:
-                abort(404)
+                return jsonify({
+                    'success': False,
+                    'error': 404,
+                    'message': 'resource not found'
+                }), 404
 
             return jsonify({
                 'success': True,
-                'blogs': selected_blog_posts
+                'blogPosts': selected_blog_posts
             }), 200
 
         except:
@@ -124,6 +133,8 @@ def create_app():
         type = body.get('type', None)
         image = body.get('image', None)
         content = body.get('content', None)
+        is_draft = body.get('isDraft', None)
+        
 
         try:
             if title is not None:
@@ -134,6 +145,13 @@ def create_app():
                 blog_post.image = image
             if content is not None:
                 blog_post.content = content
+            if is_draft is not None:
+                if blog_post.is_draft == True and is_draft == False:
+                    blog_post.is_draft = False
+                    blog_post.created_date = func.now()
+                elif blog_post.is_draft == False and is_draft == True:
+                    blog_post.is_draft = True
+                    blog_post.created_date = None
 
             blog_post.update()
 
