@@ -12,6 +12,7 @@
     "react-dom": "^18.2.0",
     "react-draft-wysiwyg": "^1.14.7",
     "react-dropzone": "^14.2.3",
+    "react-image-crop": "^10.0.9",
     "react-quill": "^2.0.0",
     "react-reveal": "^1.2.2",
     "react-router": "^5.2.0",

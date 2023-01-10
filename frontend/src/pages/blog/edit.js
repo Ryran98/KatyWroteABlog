@@ -1,7 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import server from "../../config/config";
+import { canvasPreview } from "../../helpers/canvasPreview";
+import { useDebounceEffect } from "../../helpers/useDebounceEffect";
+
 import { Button, Container, Form, FormGroup, Input, Label, Row } from "reactstrap";
-import Dropzone from "react-dropzone";
+
+import { useDropzone } from "react-dropzone";
+import ReactCrop from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+// import "./custom-image-crop.css";
+
 import { Link } from "react-router-dom";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -10,16 +18,52 @@ import { ErrorText } from "../../components/errorText";
 import { LoadingComponent } from "../../components/loadingComponent/loadingComponent";
 import { BlogPost } from "../../components/blogPost";
 
-const previewImageStyle = {
-    maxHeight: "10vh"
-};
+const baseStyle = {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '20px',
+    borderWidth: 2,
+    borderRadius: 2,
+    borderColor: '#eeeeee',
+    borderStyle: 'dashed',
+    backgroundColor: '#fafafa',
+    color: '#bdbdbd',
+    outline: 'none',
+    transition: 'border .24s ease-in-out'
+  };
+  
+  const focusedStyle = {
+    borderColor: '#2196f3'
+  };
+  
+  const acceptStyle = {
+    borderColor: '#00e676'
+  };
+  
+  const rejectStyle = {
+    borderColor: '#ff1744'
+  };
 
 export function EditBlogPostPage(props) {
     const [id, setId] = useState("");
     const [title, setTitle] = useState("");
     const [type, setType] = useState("");
+
     const [image, setImage] = useState("");
     const [imagePreview, setImagePreview] = useState("");
+    const [crop, setCrop] = useState({
+        unit: 'px',
+        x: 0,
+        y:0,
+        width: 90,
+        height: 60
+    });
+    const [completedCrop, setCompletedCrop] = useState();
+    const previewCanvasRef = useRef(null);
+    const imgRef = useRef(null);
+
     const [content, setContent] = useState("");
     const [isDraft, setIsDraft] = useState(false);
     const [createdDate, setCreatedDate] = useState("");
@@ -28,6 +72,27 @@ export function EditBlogPostPage(props) {
     const [loading, setLoading] = useState(true);
     const [success, setSuccess] = useState();
     const [error, setError] = useState();
+
+    const {getRootProps, getInputProps, isFocused, isDragAccept, isDragReject} = useDropzone(
+        {
+            accept: {"image/*": []},
+            onDrop: acceptedFiles => handleOnDrop(acceptedFiles)
+        });
+    
+    const style = useMemo(() => ({
+        ...baseStyle,
+        ...(isFocused ? focusedStyle : {}),
+        ...(isDragAccept ? acceptStyle : {}),
+        ...(isDragReject ? rejectStyle : {})
+    }), [
+        isFocused,
+        isDragAccept,
+        isDragReject
+    ]);
+
+    const imageMaxSize = 1000000000; // bytes
+    const acceptedFileTypes = "image/x-png, image/png, image/jpg, image/jpeg";
+    const acceptedFileTypesArray = acceptedFileTypes.split(",").map((item) => {return item.trim()});
 
     useEffect(() => {
         const blogId = props.match.params.id;
@@ -300,6 +365,8 @@ export function EditBlogPostPage(props) {
                         setId("");
                         setTitle("");
                         setType(0);
+                        setImage("");
+                        setImagePreview("");
                         setContent("");
                         setSuccess("Blog post deleted");
                     }
@@ -322,28 +389,91 @@ export function EditBlogPostPage(props) {
         }
     }
 
-    const uploadImage = async (event) => {
-        const file = event.target.files[0];
-        setImagePreview(URL.createObjectURL(file));
+    const verifyFile = files => {
+        console.log("verifyFile");
+        
+        if (files && files.length > 0) {
+            const currentFile = files[0];
+            const currentFileType = currentFile.type;
+            const currentFileSize = currentFile.size;
+            if (currentFileSize > imageMaxSize) {
+                alert(`This file is not allowed. ${currentFileSize} bytes is too large.`);
+                return false;
+            }
+            if (!acceptedFileTypesArray.includes(currentFileType)) {
+                alert("This file is not allowed. Only images are allowed.");
+                return false;
+            }
 
-        const base64 = await convertBase64(file);
-        setImage(base64);
+            return true;
+        }
     };
 
-    const convertBase64 = (file) => {
-        return new Promise((resolve, reject) => {
-            const fileReader = new FileReader();
-            fileReader.readAsDataURL(file);
+    const handleOnDrop = (files, rejectedFiles) => {
+        if (rejectedFiles && rejectedFiles.length > 0) {
+            verifyFile(rejectedFiles);
+        }
 
-            fileReader.onload = () => {
-                resolve(fileReader.result);
-            };
+        if (files && files.length > 0) {
+            const isVerified = verifyFile(files);
+            if (isVerified) {
+                const currentFile = files[0];
+                const fileItemReader = new FileReader();
+                fileItemReader.addEventListener("load", () => {
+                    const result = fileItemReader.result;
+                    setImagePreview(result);
+                }, false);
 
-            fileReader.onerror = (error) => {
-                reject(error);
-            };
-        });
+                fileItemReader.readAsDataURL(currentFile);
+            }
+        }
+    }
+
+    const handleOnCropChange = crop => {
+        setCrop(crop);
     };
+
+    useDebounceEffect(
+        async () => {
+            if (
+                completedCrop?.width &&
+                completedCrop?.height &&
+                imgRef.current &&
+                previewCanvasRef.current
+            ) {
+                canvasPreview(imgRef.current, previewCanvasRef.current, completedCrop);
+
+                const canvasRef = previewCanvasRef.current;
+                const image64 = canvasRef.toDataURL("image/");
+
+                console.log(`base64 : ${image64}`);
+            }
+        }, 100, [completedCrop]
+    );
+
+    // const handleOnCropComplete = (pixelCrop, percentageCrop) => {
+        
+        
+    //     // console.log(`percentageCrop: ${JSON.stringify(percentageCrop)}`);
+    //     // saveCroppedImage(pixelCrop);
+    // };
+
+    const saveCroppedImage = (pixelCrop) => {
+
+        console.log(`pixelCrop: ${JSON.stringify(pixelCrop)}`);
+        const canvas = React.createRef().current;
+
+        canvas.width = pixelCrop.width;
+        canvas.height = pixelCrop.height;
+        const ctx = canvas.getContext("2d");
+        const image = new Image();
+        image.src = imagePreview;
+        image.onLoad = function () {
+            ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+        }
+
+        console.log(`image : ${JSON.stringify(image)}`);
+    }
 
     if (loading)
         return <LoadingComponent />;
@@ -365,7 +495,7 @@ export function EditBlogPostPage(props) {
                         </Button>
                     }
                     <FormGroup>
-                        <Label for="title">Title *</Label>
+                        <Label for="title">Title</Label>
                         <Input
                             type="text"
                             name="title"
@@ -377,9 +507,9 @@ export function EditBlogPostPage(props) {
                         />
                     </FormGroup>
                     <FormGroup>
-                        <Label for="type">Type *</Label>
+                        <Label for="type">Type</Label>
                         <Row><Input
-                            className="col-4"
+                            className="col-4 form-control ml-3"
                             type="select"
                             name="type"
                             value={type}
@@ -393,6 +523,8 @@ export function EditBlogPostPage(props) {
                             <option value="3">Van Life</option>
                         </Input></Row>
                     </FormGroup>
+
+                    {/* Standard image input */}
                     {/* <FormGroup>
                         <Label for="image">Preview Image</Label>
                         <Input
@@ -406,7 +538,9 @@ export function EditBlogPostPage(props) {
                         />
                         <img src={imagePreview} style={previewImageStyle} />
                     </FormGroup> */}
-                    <FormGroup>
+
+                    {/* Dropzone attempt #1 */}
+                    {/* <FormGroup>
                         <Label for="image">Preview Image</Label>
                         <Dropzone onDrop={acceptedFiles => console.log(`acceptedFiles : ${acceptedFiles}`)}>
                             {({getRootProps, getInputProps}) => (
@@ -418,7 +552,52 @@ export function EditBlogPostPage(props) {
                                 </section>
                             )}
                         </Dropzone>
+                    </FormGroup> */}
+
+                    <FormGroup>
+                        <Label for="image">Preview Image</Label>
+
+                        {/* <input ref={fileInputRef} type="file" accept={acceptedFileTypes} multiple={false} onChange={handleFileSelect} /> */}
+                        
+                        <div className="container">
+                                <div {...getRootProps({style})}>
+                                    <input {...getInputProps()} />
+                                    <p>Drag 'n' drop your preview image here, or click to select an image</p>
+                                </div>
+                            </div>
+
+                        {imagePreview !== null && imagePreview !== "" &&
+                            <div>
+                                <ReactCrop
+                                    crop={crop}
+                                    aspect={3 / 2}
+                                    maxWidth={900}
+                                    maxHeight={600}
+                                    keepSelection={true}
+                                    onComplete={c => setCompletedCrop(c)}
+                                    onChange={handleOnCropChange}
+                                >
+                                    <img ref={imgRef} src={imagePreview} />
+                                </ReactCrop>
+                            </div>
+                        }
+                        <div>
+                            {!!completedCrop && 
+                                <canvas 
+                                    ref={previewCanvasRef}
+                                    style={{
+                                        display: "none",
+                                        border: "1px solid black",
+                                        objectFit: "contain",
+                                        width: completedCrop.width,
+                                        height: completedCrop.height
+                                    }}
+                                />
+                            }
+                        </div>
+
                     </FormGroup>
+
                     <FormGroup>
                         <Label>Content</Label>
                         <ReactQuill
