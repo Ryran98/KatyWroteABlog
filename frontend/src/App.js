@@ -25,27 +25,11 @@ const footerStyle = {
   minHeight: "5rem"
 };
 
-const lineBreakStyle = {
-  marginBottom: "5vh"
-};
-
-const footerBarStyle = {
-  backgroundColor: "#068845",
-  color: "#ffffff",
-  minHeight: "40px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center"
-};
-
 function App() {
   return (
     <div className="App" style={parentDivStyle}>
       <div style={wrapStyle}>
         <Navigation />
-        {/* <Header
-          title="Katy wrote a blog"
-        /> */}
         <Switch>
           {routes.map((route, index) => {
             return (
@@ -60,13 +44,7 @@ function App() {
         </Switch>
       </div>
       <div style={footerStyle}>
-        <hr style={lineBreakStyle} />
-        <Brands />
-        <Container fluid style={footerBarStyle}>
-          <Row>
-            ©2022 KatyWroteABlog
-          </Row>
-        </Container>
+        <Footer />
       </div>
     </div>
   );

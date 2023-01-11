@@ -8,6 +8,8 @@ import { BlogPost } from "../../components/blogPost";
 
 export function BlogPostPage(props) {
     const [title, setTitle] = useState("");
+    const [createdDate, setCreatedDate] = useState("");
+    const [isDraft, setIsDraft] = useState(false);
     const [content, setContent] = useState("");
 
     const [loading, setLoading] = useState(true);
@@ -32,6 +34,8 @@ export function BlogPostPage(props) {
                         const blogPost = data.blogPost;
 
                         setTitle(blogPost.title);
+                        setCreatedDate(blogPost.createdDate);
+                        setIsDraft(blogPost.isDraft);
                         setContent(blogPost.content);
                     }
                     else {
@@ -54,12 +58,19 @@ export function BlogPostPage(props) {
     }
 
     if (loading)
-        <LoadingComponent />
+        return <LoadingComponent />
+
+    if (isDraft)
+    return (
+        <Container style={{display: "flex", justifyContent: "center"}}>
+            <h1>Blog post does not exist</h1>
+        </Container>
+    );
 
     return (
         <Container>
             <ErrorText error={error} />
-            <BlogPost title={title} content={content} />
+            <BlogPost title={title} createdDate={createdDate} content={content} />
         </Container>
     );
 }

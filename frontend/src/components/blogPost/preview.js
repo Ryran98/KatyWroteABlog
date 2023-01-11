@@ -18,28 +18,35 @@ const createdDateStyle = {
 
 export function BlogPostPreview(props) {
     const leveningStr = (data, amount) => {
-        let string = data.split(/<\/?[\w"= -]*>/);
+        let string = data.split(/<\/?[\w"=+ \-\\',;:\/]*\/?>/);
         string = string.reduce((data, one) => data += one + " ");
         string = string.substr(0, amount);
         return `${string} ...`;
     };
-    
+
+    if (props.isDraft)
+    return <div></div>;
+
     return (
-        <Container fluid style={containerStyle}>
+        <Container fluid className="mb-3" style={containerStyle}>
+            <a style={{ display: "block" }} href={`/blog/post/${props.id}`}>
             <Row>
-                <img src={props.image ?? DefaultImage} style={imageStyle} />
-                <div className="pl-5">
+                <img className="col-6 pl-0" src={props.image} style={imageStyle} />
+                <div className="col-6 pl-4 mt-2">
                     <Row>
-                        <h3>{props.title}</h3>
+                        <h3 style={{color: "black"}}>{props.title}</h3>
                     </Row>
                     <Row>
                         <i style={createdDateStyle}>{props.createdDate}</i>
                     </Row>
                     <Row>
-                        {leveningStr(props.content, 250)}
+                        <div style={{color: "black"}}>
+                            {leveningStr(props.content, 200)}
+                        </div>
                     </Row>
                 </div>
             </Row>
-        </Container>
+            </a>
+        </Container >
     );
 }
