@@ -1,11 +1,11 @@
 import React from 'react';
 import { Switch, Route } from "react-router-dom";
-import { Container, Row } from 'reactstrap';
-import './App.css';
 import { Footer } from './components/footer';
-import { Brands } from './components/footer/brands';
-import { Header } from './components/header';
 import { Navigation } from './components/navigation';
+
+// keep App.css below bootstrap so that it can override styles etc
+// import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 
 import routes from './config/routes';
 

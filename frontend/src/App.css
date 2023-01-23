@@ -5,3 +5,7 @@ body {
 .quill .ql-editor {
     font-family: 'HankenBook';
 }
+
+.quill img {
+    max-width: 100%;
+}

@@ -1,7 +1,6 @@
 import React from 'react';
 import 'react-router';
 import { Container, NavLink, Navbar, NavbarToggler, Collapse, NavItem, Nav, Dropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
-import redVanImage from "../../images/red-van.webp";
 
 var navbarStyle = {
     backgroundColor: "#068845",

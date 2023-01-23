@@ -4,6 +4,7 @@ import { canvasPreview } from "../../helpers/canvasPreview";
 import { useDebounceEffect } from "../../helpers/useDebounceEffect";
 
 import { Button, Container, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import Fade from "react-reveal/Fade";
 
 import { useDropzone } from "react-dropzone";
 import ReactCrop from "react-image-crop";
@@ -11,12 +12,16 @@ import "react-image-crop/dist/ReactCrop.css";
 // import "./custom-image-crop.css";
 
 import { Link } from "react-router-dom";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 import { SuccessText } from "../../components/successText";
 import { ErrorText } from "../../components/errorText";
 import { LoadingComponent } from "../../components/loadingComponent/loadingComponent";
 import { BlogPost } from "../../components/blogPost";
+
+import ReactQuill, { Quill } from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import '../../App.css';
+import ImageResize from "quill-image-resize-module-react";
+Quill.register("modules/imageResize", ImageResize);
 
 const baseStyle = {
     flex: 1,
@@ -108,6 +113,7 @@ export function EditBlogPostPage(props) {
     const modules = {
         toolbar: [
             [{ header: [1, 2, 3, 4, 5, 6, false] }],
+            [{ size: ["small", false, "large", "huge"] }],
             ["bold", "italic", "underline", "strike"],
             [{ color: [] }, { background: [] }],
             [{ script: "sub" }, { script: "super" }],
@@ -116,7 +122,10 @@ export function EditBlogPostPage(props) {
             [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
             ["link", "image", "video"],
             ["clean"]
-        ]
+        ],
+        imageResize: {
+            modules: ["Resize", "DisplaySize"]
+        }
     };
 
     const getBlogPost = (id) => {
@@ -523,190 +532,192 @@ export function EditBlogPostPage(props) {
 
     return (
         <Container style={{ marginBottom: "5vh" }}>
-            <Form>
-                {id != null && id != '' &&
-                    <div style={{display: "flex", justifyContent: "center"}}>
-                        <Button
-                            className="mb-2"
+            <Fade cascade>
+                <Form>
+                    {id != null && id != '' &&
+                        <div style={{ display: "flex", justifyContent: "center" }}>
+                            <Button
+                                className="mb-2"
 
-                            color="success"
-                            tag={Link}
-                            to={`/blog/post/${id}`}
-                            target="_blank"
-                        >
-                            View your blog post
-                        </Button>
-                    </div>
-                }
-                <FormGroup>
-                    <Label for="title">Title</Label>
-                    <Input
-                        type="text"
-                        name="title"
-                        value={title}
-                        id="title"
-                        placeholder="Enter a title ..."
-                        disabled={saving}
-                        onChange={event => setTitle(event.target.value)}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Label for="type">Type</Label>
-                    <Row><Input
-                        className="col-4 form-control ml-3"
-                        type="select"
-                        name="type"
-                        value={type}
-                        id="type"
-                        disabled={saving}
-                        onChange={event => setType(event.target.value)}
-                    >
-                        <option value="0">Pick an option...</option>
-                        <option value="1">Travel</option>
-                        <option value="2">Recipies</option>
-                        <option value="3">Van Life</option>
-                    </Input></Row>
-                </FormGroup>
-
-                <FormGroup>
-                    <Label for="image">Preview Image</Label>
-
-                    <div className="container mb-5">
-                        <div {...getRootProps({ style })}>
-                            <input {...getInputProps()} />
-                            <p>Drag 'n' drop your preview image here, or click to select an image</p>
-                        </div>
-                    </div>
-
-                    {imagePreview !== null && imagePreview !== "" &&
-                        <div>
-                            <ReactCrop
-                                crop={crop}
-                                aspect={3 / 2}
-                                maxWidth={900}
-                                maxHeight={600}
-                                keepSelection={true}
-                                onComplete={c => setCompletedCrop(c)}
-                                onChange={handleOnCropChange}
+                                color="success"
+                                tag={Link}
+                                to={`/blog/post/${id}`}
+                                target="_blank"
                             >
-                                <img ref={imgRef} src={imagePreview} />
-                            </ReactCrop>
+                                View your blog post
+                            </Button>
                         </div>
                     }
-                    <div>
-                        {!!completedCrop &&
-                            <canvas
-                                ref={previewCanvasRef}
-                                style={{
-                                    display: "none",
-                                    border: "1px solid black",
-                                    objectFit: "contain",
-                                    width: completedCrop.width,
-                                    height: completedCrop.height
-                                }}
-                            />
+                    <FormGroup>
+                        <Label for="title">Title</Label>
+                        <Input
+                            type="text"
+                            name="title"
+                            value={title}
+                            id="title"
+                            placeholder="Enter a title ..."
+                            disabled={saving}
+                            onChange={event => setTitle(event.target.value)}
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="type">Type</Label>
+                        <Row><Input
+                            className="col-4 form-control ml-3"
+                            type="select"
+                            name="type"
+                            value={type}
+                            id="type"
+                            disabled={saving}
+                            onChange={event => setType(event.target.value)}
+                        >
+                            <option value="0">Pick an option...</option>
+                            <option value="1">Travel</option>
+                            <option value="2">Recipies</option>
+                            <option value="3">Van Life</option>
+                        </Input></Row>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label for="image">Preview Image</Label>
+
+                        <div className="container mb-5">
+                            <div {...getRootProps({ style })}>
+                                <input {...getInputProps()} />
+                                <p>Drag 'n' drop your preview image here, or click to select an image</p>
+                            </div>
+                        </div>
+
+                        {imagePreview !== null && imagePreview !== "" &&
+                            <div>
+                                <ReactCrop
+                                    crop={crop}
+                                    aspect={3 / 2}
+                                    maxWidth={900}
+                                    maxHeight={600}
+                                    keepSelection={true}
+                                    onComplete={c => setCompletedCrop(c)}
+                                    onChange={handleOnCropChange}
+                                >
+                                    <img ref={imgRef} src={imagePreview} />
+                                </ReactCrop>
+                            </div>
                         }
-                    </div>
-
-                </FormGroup>
-
-                <FormGroup>
-                    <Label>Content</Label>
-                    <ReactQuill
-                        theme="snow"
-                        value={content}
-                        modules={modules}
-                        onChange={newValue => {
-                            setContent(newValue);
-                        }}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    {id != null && id != '' ?
                         <div>
-                            {isDraft === true &&
+                            {!!completedCrop &&
+                                <canvas
+                                    ref={previewCanvasRef}
+                                    style={{
+                                        display: "none",
+                                        border: "1px solid black",
+                                        objectFit: "contain",
+                                        width: completedCrop.width,
+                                        height: completedCrop.height
+                                    }}
+                                />
+                            }
+                        </div>
+
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label>Content</Label>
+                        <ReactQuill
+                            theme="snow"
+                            value={content}
+                            modules={modules}
+                            onChange={newValue => {
+                                setContent(newValue);
+                            }}
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        {id != null && id != '' ?
+                            <div>
+                                {isDraft === true &&
+                                    <Button
+                                        className="mb-2"
+                                        block
+                                        color="info"
+                                        onClick={() => publishBlogPost()}
+                                        disabled={saving}
+                                    >
+                                        <i className="fas fa-newspaper mr-1"></i>
+                                        Publish
+                                    </Button>
+                                }
                                 <Button
                                     className="mb-2"
                                     block
-                                    color="info"
-                                    onClick={() => publishBlogPost()}
+                                    color="primary"
+                                    onClick={() => updateBlogPost()}
+                                    disabled={saving}
+                                >
+                                    <i className="fas fa-pen mr-1"></i>
+                                    Update
+                                </Button>
+                            </div>
+                            :
+                            <div>
+                                <Button
+                                    className="mb-2"
+                                    block
+                                    onClick={() => createDraftBlogPost()}
+                                    disabled={saving}
+                                >
+                                    <i className="fas fa-copy mr-1"></i>
+                                    Save as Draft
+                                </Button>
+                                <Button
+                                    className="mb-2"
+                                    block
+                                    color="primary"
+                                    onClick={() => createBlogPost()}
                                     disabled={saving}
                                 >
                                     <i className="fas fa-newspaper mr-1"></i>
-                                    Publish
+                                    Post
+                                </Button>
+                            </div>
+                        }
+                    </FormGroup>
+                    <FormGroup>
+                        <SuccessText success={success} />
+                        <ErrorText error={error} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>Preview</Label>
+                        <BlogPost title={title} createdDate={createdDate} content={content} />
+                    </FormGroup>
+                    {id != null && id != '' &&
+                        <div>
+                            {isDraft === false &&
+                                <Button
+                                    className="mb-2"
+                                    block
+                                    color="primary"
+                                    onClick={() => archiveBlogPost()}
+                                    disabled={saving}
+                                >
+                                    <i className="fas fa-box-archive mr-1"></i>
+                                    Archive
                                 </Button>
                             }
+
                             <Button
                                 className="mb-2"
                                 block
-                                color="primary"
-                                onClick={() => updateBlogPost()}
+                                color="danger"
+                                onClick={() => deleteBlogPost()}
                                 disabled={saving}
                             >
-                                <i className="fas fa-pen mr-1"></i>
-                                Update
-                            </Button>
-                        </div>
-                        :
-                        <div>
-                            <Button
-                                className="mb-2"
-                                block
-                                onClick={() => createDraftBlogPost()}
-                                disabled={saving}
-                            >
-                                <i className="fas fa-copy mr-1"></i>
-                                Save as Draft
-                            </Button>
-                            <Button
-                                className="mb-2"
-                                block
-                                color="primary"
-                                onClick={() => createBlogPost()}
-                                disabled={saving}
-                            >
-                                <i className="fas fa-newspaper mr-1"></i>
-                                Post
+                                <i className="fas fa-trash mr-1"></i>
+                                Delete
                             </Button>
                         </div>
                     }
-                </FormGroup>
-                <FormGroup>
-                    <SuccessText success={success} />
-                    <ErrorText error={error} />
-                </FormGroup>
-                <FormGroup>
-                    <Label>Preview</Label>
-                    <BlogPost title={title} createdDate={createdDate} content={content} />
-                </FormGroup>
-                {id != null && id != '' &&
-                    <div>
-                        {isDraft === false &&
-                            <Button
-                                className="mb-2"
-                                block
-                                color="primary"
-                                onClick={() => archiveBlogPost()}
-                                disabled={saving}
-                            >
-                                <i className="fas fa-box-archive mr-1"></i>
-                                Archive
-                            </Button>
-                        }
-
-                        <Button
-                            className="mb-2"
-                            block
-                            color="danger"
-                            onClick={() => deleteBlogPost()}
-                            disabled={saving}
-                        >
-                            <i className="fas fa-trash mr-1"></i>
-                            Delete
-                        </Button>
-                    </div>
-                }
-            </Form>
+                </Form>
+            </Fade>
         </Container>
     );
 }
