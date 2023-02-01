@@ -3,7 +3,7 @@ import { Container, Row } from "reactstrap";
 import { Brands } from "./brands";
 
 const lineBreakStyle = {
-    marginBottom: "5vh"
+    marginBottom: "2.5vh"
   };
   
   const footerBarStyle = {

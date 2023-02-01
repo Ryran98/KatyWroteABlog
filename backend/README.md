@@ -70,4 +70,7 @@ flask db --help
 - Install ubuntu on laptop test server
 - Test deployment to test server
 - Purchase ionos ubuntu web server (cheapest option)
-- Configure domain routing from GoDaddy
+- Transfer domain from GoDaddy
+
+https://stavshamir.github.io/python/dockerizing-a-flask-mysql-app-with-docker-compose/
+https://docs.docker.com/compose/install/

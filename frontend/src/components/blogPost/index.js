@@ -7,10 +7,10 @@ export function BlogPost(props) {
     return (
         <Container>
             <Fade>
-                <Row className="justify-content-center">
+                <Row className="text-center">
                     <h1>{props.title}</h1>
                 </Row>
-                <Row className="justify-content-center">
+                <Row className="text-center">
                     <i style={{color: "grey"}}>{props.createdDate}</i>
                 </Row>
             </Fade>

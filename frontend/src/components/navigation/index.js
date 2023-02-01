@@ -61,7 +61,7 @@ export class Navigation extends React.Component {
                 <Container>
                     <NavbarToggler onClick={this.toggle} />
                     <Collapse navbar isOpen={this.state.isOpen} >
-                        <Nav className="ms-auto" navbar>
+                        <Nav className="" navbar>
                             <NavItem>
                                 <NavLink href="/" style={navLinkStyle}><b><i>Katy wrote a blog</i></b></NavLink>
                             </NavItem>
@@ -73,9 +73,9 @@ export class Navigation extends React.Component {
                                     Blog
                                 </DropdownToggle>
                                 <DropdownMenu end style={dropdownStyle}>
-                                    <DropdownItem href="/blog/travel" style={navLinkStyle}>Travel</DropdownItem>
-                                    <DropdownItem href="/blog/recipies" style={navLinkStyle}>Recipies</DropdownItem>
-                                    <DropdownItem href="/blog/vanlife" style={navLinkStyle}>Van Life</DropdownItem>
+                                    <DropdownItem className="nav-dropdown-item" href="/blog/travel" style={navLinkStyle}>Travel</DropdownItem>
+                                    <DropdownItem className="nav-dropdown-item" href="/blog/recipies" style={navLinkStyle}>Recipies</DropdownItem>
+                                    <DropdownItem className="nav-dropdown-item" href="/blog/vanlife" style={navLinkStyle}>Van Life</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                             <NavItem>

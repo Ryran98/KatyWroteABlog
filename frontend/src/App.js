@@ -4,14 +4,15 @@ import { Footer } from './components/footer';
 import { Navigation } from './components/navigation';
 
 // keep App.css below bootstrap so that it can override styles etc
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 import routes from './config/routes';
 
 const parentDivStyle = {
   position: "relative",
-  minHeight: "100vh"
+  minHeight: "100vh",
+  fontFamily: "HankenBook"
 };
 
 const wrapStyle = {

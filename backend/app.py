@@ -5,6 +5,10 @@ from models import db, BlogPost, setup_db
 from sqlalchemy.sql import func
 import logging
 
+# email libaries
+import smtplib
+from email.mime.text import MIMEText
+
 ITEMS_PER_PAGE = 10
 
 def paginate_items(request, items):
@@ -29,6 +33,49 @@ def create_app():
         response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
+
+    @app.route('/contact', methods=['POST'])
+    def contact():
+        try:
+            sender = 'server.katywroteablog@gmail.com'
+            password = 'qrljqewbvbwmdmkw'
+            recipients = ['ryan.wilson0198@gmail.com']
+
+            body = request.get_json()
+            first_name = body.get('firstName', '[NOT PROVIDED]')
+            surname = body.get('surname', '[NOT PROVIDED]')
+            email = body.get('email', '[NOT PROVIDED]')
+            phone_number = body.get('phoneNumber', '[NOT PROVIDED]')
+            subject = body.get('subject', '[NOT PROVIDED]')
+            message = body.get('message', '[NOT PROVIDED]')
+
+            if phone_number == '':
+                phone_number = '[NOT PROVIDED]'
+
+            email_message = 'You have been contacted via katywroteablog.com:\n\n'
+
+            email_message += 'First Name: ' + first_name + '\n'
+            email_message += 'Surname: ' + surname + '\n'
+            email_message += 'Email Address: ' + email + '\n'
+            email_message += 'Phone Number: ' + phone_number + '\n\n'
+
+            email_message += 'Message:\n\n' + message
+
+            msg = MIMEText(email_message)
+            msg['Subject'] = '[CONTACT FORM SUBMISSION] : ' + subject
+            msg['From'] = sender
+            msg['To'] = ', '.join(recipients)
+            smtp_server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+            smtp_server.login(sender, password)
+            smtp_server.sendmail(sender, recipients, msg.as_string())
+            smtp_server.quit()
+
+            return jsonify({
+                'success': True
+            })
+        except:
+            logging.exception("message")
+            abort(422)
 
     @app.route('/blogs', methods=['GET'])
     def get_blogs():

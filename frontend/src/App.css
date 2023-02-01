@@ -9,3 +9,7 @@ body {
 .quill img {
     max-width: 100%;
 }
+
+.nav-dropdown-item:hover {
+    box-shadow: 0 0 10px 100px #068845 inset;
+}
