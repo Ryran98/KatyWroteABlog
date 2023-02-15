@@ -10,4 +10,8 @@ export innodb_strict_mode=0
 
     # ryanwilson-staging
 # export DATABASE_URL="mysql+pymysql://ryan.wilson:Tfhibw28spc!@192.168.1.74/katywroteablog"
-export DATABASE_URL="mysql+pymysql://katy:Tfhiliwn63!@192.168.1.74/katywroteablog"
+# export DATABASE_URL="mysql+pymysql://katy:Tfhiliwn63!@192.168.1.74/katywroteablog"
+
+    # AWS EC2 server (Staging)
+# export DATABASE_URL="mysql+pymysql://katy:Tfhiliwn63!@ryanbwilson.com/katywroteablog"
+export DATABASE_URL="mysql+pymysql://root:Tfpihwabci02!@ryanbwilson.com/katywroteablog"
