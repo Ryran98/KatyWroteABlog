@@ -24,8 +24,9 @@ def create_app():
     app = Flask(__name__)
     setup_db(app)
 
-    cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
-    migrate = Migrate(app, db)
+    CORS(app)
+    # cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # migrate = Migrate(app, db)
 
     @app.after_request
     def after_request(response):
@@ -247,7 +248,7 @@ def create_app():
 
     return app
 
-App = create_app()
+app = create_app()
 
 if __name__ == '__main__':
-    App.run(host='0.0.0.0', port=8080, debug=True)
+    app.run(host='0.0.0.0', port=8080, debug=True)

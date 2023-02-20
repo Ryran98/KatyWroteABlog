@@ -14,4 +14,5 @@ export innodb_strict_mode=0
 
     # AWS EC2 server (Staging)
 # export DATABASE_URL="mysql+pymysql://katy:Tfhiliwn63!@ryanbwilson.com/katywroteablog"
-export DATABASE_URL="mysql+pymysql://root:Tfpihwabci02!@ryanbwilson.com/katywroteablog"
+export DATABASE_URL="mysql+pymysql://root:Tfpihwabci02!@server.ryanbwilson.com/katywroteablog"
+# export DATABASE_URL="mysql+pymysql://root:Tfpihwabci02!@52.214.111.220/katywroteablog"

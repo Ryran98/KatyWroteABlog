@@ -64,6 +64,8 @@ flask db --help
 
 ## Deployment
 
+Deployment for frontend and backend was based on [this guide](https://adamraudonis.medium.com/how-to-deploy-a-website-on-aws-with-docker-flask-react-from-scratch-d0845ebd9da4)
+
 ### To-Do
 
 - Set up docker image
