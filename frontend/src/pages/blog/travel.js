@@ -18,6 +18,8 @@ export function TravelBlogPage(props) {
 
     const getBlogPosts = () => {
         try {
+            console.log('getting blogs...');
+            
             fetch(`${server.baseUrl}/blogs?blogTypeId=1`)
                 .then(response => response.json())
                 .then(data => {
