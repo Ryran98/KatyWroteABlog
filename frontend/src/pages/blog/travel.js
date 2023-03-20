@@ -52,7 +52,7 @@ export function TravelBlogPage(props) {
         return (
             <Fade>
                 <Container style={{ display: "flex", justifyContent: "center" }}>
-                    <h1>Travel blog coming sooooon...</h1>
+                    <h1>Travel blog coming soon...</h1>
                 </Container>
             </Fade>
         );

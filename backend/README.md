@@ -66,13 +66,37 @@ flask db --help
 
 Deployment for frontend and backend was based on [this guide](https://adamraudonis.medium.com/how-to-deploy-a-website-on-aws-with-docker-flask-react-from-scratch-d0845ebd9da4)
 
-### To-Do
+To deploy the backend, from the root directory run:
 
-- Set up docker image
-- Install ubuntu on laptop test server
-- Test deployment to test server
-- Purchase ionos ubuntu web server (cheapest option)
-- Transfer domain from GoDaddy
+```
+. deploy_backend.sh
+```
+
+This will copy the latest files to the kwb-backend s3 bucket
+
+---
+
+You will then need to remote in to the ec2 instance and run the following command:
+
+```
+aws s3 sync s3://kwb-backend backend
+```
+
+This will copy the latest files from the s3 bucket to your ec2 instance
+
+---
+
+Finally run the following docker commands from within the backend directory:
+
+```
+docker build -t kwb-backend .
+docker run -d -p 8080:8080 kwb-backend
+```
+
+
+### Resources
 
 https://stavshamir.github.io/python/dockerizing-a-flask-mysql-app-with-docker-compose/
 https://docs.docker.com/compose/install/
+
+https://adamraudonis.medium.com/how-to-deploy-a-website-on-aws-with-docker-flask-react-from-scratch-d0845ebd9da4
